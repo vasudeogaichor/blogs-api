@@ -2,6 +2,7 @@ import http from "http";
 import express, { Express } from "express";
 import morgan from "morgan";
 import routes from "./routes/posts";
+import db from "./database/connection";
 
 const router: Express = express();
 
@@ -28,6 +29,11 @@ router.use((req, res, next) => {
   }
   next();
 });
+
+//synchronizing the database and forcing it to false so we dont lose data
+db.sequelize.sync({ force: true }).then(() => {
+  console.log("db has been re sync")
+})
 
 /** Routes */
 router.use("/", routes);
