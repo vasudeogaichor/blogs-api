@@ -4,15 +4,11 @@ import * as dotenv from 'dotenv';
 // Load environment variables from .env file
 dotenv.config();
 
-// Access environment variables
-const DB_HOST = process.env.DB_HOST;
-const DB_PORT = process.env.DB_PORT;
-const DB_NAME = process.env.DB_NAME;
-const DB_USER = process.env.DB_USER;
-const DB_PASSWORD = process.env.DB_PASSWORD;
+// Create connection string
+const connectionUrl = `postgres://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}`
 
 // Database connection with environment variables
-const sequelize = new Sequelize(`postgres://${DB_USER}:${DB_PASSWORD}@${DB_HOST}:${DB_PORT}/${DB_NAME}`, {
+const sequelize = new Sequelize(connectionUrl, {
   dialect: 'postgres'
 });
 
@@ -30,7 +26,7 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 // Connecting to model
-// db.users = require('./userModel')(sequelize, DataTypes);
+// @TODO: initialize models here
 
 // Exporting the module
 export = db;
