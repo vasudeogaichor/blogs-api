@@ -26,7 +26,7 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 // Connecting to model
-// @TODO: initialize models here
+db.posts = require('./models/posts')(sequelize, DataTypes);
 
 // Exporting the module
 export = db;
