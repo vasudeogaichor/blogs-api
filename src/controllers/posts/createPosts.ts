@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { Sequelize, DataTypes, Transaction } from "sequelize";
+import { Transaction } from "sequelize";
 import db from "../../database/connection";
 
 export default async function createPosts(
@@ -9,9 +9,9 @@ export default async function createPosts(
 ) {
   // get the data from req.body
   const title: string = req.body.title;
-  const content: string = req.body.body;
+  const content: string = req.body.content;
   // add the post
-  const t: Transaction = await db.transaction();
+  const t: Transaction = await db.sequelize.transaction();
 
   let result = null;
   try {
@@ -30,7 +30,7 @@ export default async function createPosts(
     throw new Error(`Post creation failed with error- ${err}`);
   }
   // return response
-
+  console.log('result - ', result);
   return res.status(200).json({
     message: result,
   });

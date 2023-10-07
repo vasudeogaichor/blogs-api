@@ -1,11 +1,11 @@
 import express from "express";
-import controller from "../controllers/posts";
+import { postControllers } from "../controllers";
 const router = express.Router();
 
-router.get("/posts", controller.getPosts);
-router.get("/posts/:id", controller.getPost);
-router.put("/posts/:id", controller.updatePost);
-router.delete("/posts/:id", controller.deletePost);
-router.post("/posts", controller.addPost);
+// router.get("/posts", postControllers.getPosts);
+// router.get("/posts/:id", postControllers.getPost);
+// router.put("/posts/:id", postControllers.updatePost);
+// router.delete("/posts/:id", postControllers.deletePost);
+router.post("/posts", postControllers.createPosts);
 
 export = router;

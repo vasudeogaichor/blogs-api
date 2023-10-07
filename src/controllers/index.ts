@@ -8,6 +8,8 @@ export interface Post {
   body: String;
 }
 
+export * as postControllers from './posts';
+
 // // getting all posts
 // const getPosts = async (req: Request, res: Response, next: NextFunction) => {
 //   // get some posts
