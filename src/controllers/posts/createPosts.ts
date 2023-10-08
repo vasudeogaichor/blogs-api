@@ -7,13 +7,12 @@ export default async function createPosts(
   res: Response,
   next: NextFunction
 ) {
-  // get the data from req.body
   const title: string = req.body.title;
   const content: string = req.body.content;
-  // add the post
+
   const t: Transaction = await db.sequelize.transaction();
 
-  let result = null;
+  let result: any = null;
   try {
     result = await db.posts.create(
       {
@@ -29,9 +28,8 @@ export default async function createPosts(
 
     throw new Error(`Post creation failed with error- ${err}`);
   }
-  // return response
-  console.log('result - ', result);
-  return res.status(200).json({
+
+  return res.status(201).json({
     message: result,
   });
 }
