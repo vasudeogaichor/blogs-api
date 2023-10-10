@@ -11,13 +11,19 @@ export default async function deletePosts(
   const result: any = await db.posts.findByPk(postId);
 
   if (!result) {
-    throw new Error(`Post with id ${postId} does not exist`);
+    // throw new Error(`Post with id ${postId} does not exist`);
+    return res.status(404).json({
+      error: `Post with id ${postId} does not exist`
+    });
   }
 
   const deletedRecord: any = await result.destroy();
 
   if (!deletedRecord.deleted_at) {
-    throw new Error(`Error deleting post with id ${postId}`);
+    // throw new Error(`Error deleting post with id ${postId}`);
+    return res.status(400).json({
+      error: `Error deleting post with id ${postId}`
+    });
   }
 
   return res.status(204).json({

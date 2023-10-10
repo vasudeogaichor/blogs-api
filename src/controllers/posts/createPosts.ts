@@ -26,7 +26,10 @@ export default async function createPosts(
   } catch (err) {
     await t.rollback();
 
-    throw new Error(`Post creation failed with error- ${err}`);
+    // throw new Error(`Post creation failed with error- ${err}`);
+    return res.status(400).json({
+      error: `Post creation failed with error- ${err}`
+    })
   }
 
   return res.status(201).json({
