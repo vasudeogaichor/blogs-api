@@ -8,7 +8,6 @@ export async function validateRequest(
     // Add your request data validation and parsing logic here
     // Example: parsing JSON data from the request body
     try {
-        console.log('req - ', req);
         // TODO - add validation and parsing logic
         next();
     } catch (error) {
