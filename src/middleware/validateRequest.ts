@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import * as criterias from "../criterias";
 
 function extractUrlPath(requestUrl: string) {
   const match = requestUrl.match(/^\/(\w+)/);
@@ -10,10 +11,16 @@ function extractUrlPath(requestUrl: string) {
 
 async function parseCrieria(apiService: string, query: object) {
   // Verify if the query params satisfy the pre-defined types for list criteria
-  console.log("");
+  const criteriaFormat = getCriteriaFormat(apiService);
+  console.log("criteriaFormat - ", criteriaFormat);
 }
 
-async function getCriteriaFormat(path: string) {}
+function getCriteriaFormat(path: string) {
+  const criteriaObjectName: string = `${path}Criteria`;
+  console.log('criteriaObjectName - ', criteriaObjectName)
+  console.log('criterias - ', criterias)
+  // return criterias[criteriaObjectName];
+}
 
 export async function validateRequest(
   req: Request,
@@ -32,6 +39,7 @@ export async function validateRequest(
       case "GET":
         // TODO - add validation and parsing logic
         const criteria: object | null = parseCrieria(apiService!, req.query);
+        console.log('criteria - ', criteria)
         break;
       case "POST":
         break;
