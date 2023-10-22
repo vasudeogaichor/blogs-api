@@ -9,17 +9,33 @@ function extractUrlPath(requestUrl: string) {
   }
 }
 
+// Verify if the query params satisfy the pre-defined types for list criteria
 async function parseCrieria(apiService: string, query: object) {
-  // Verify if the query params satisfy the pre-defined types for list criteria
-  const criteriaFormat = getCriteriaFormat(apiService);
-  console.log("criteriaFormat - ", criteriaFormat);
-}
+  const parsedQuery: object = {};
 
-function getCriteriaFormat(path: string) {
-  const criteriaObjectName: string = `${path}Criteria`;
-  console.log('criteriaObjectName - ', criteriaObjectName)
-  console.log('criterias - ', criterias)
-  // return criterias[criteriaObjectName];
+  // get pre-defined types for criteria fields
+  const criteriaFormatObjectName: string = `${apiService}Criteria`;
+  console.log("query - ", query);
+
+  const criteria: object = (criterias as any)[criteriaFormatObjectName];
+  console.log("criteria - ", criteria);
+
+  for (const key in query) {
+    console.log("key - ", key);
+    if (key in criteria) {
+      const expectedType = criteria[key].type;
+      const value = data[key];
+      if (value instanceof expectedType) {
+        console.log(`Key "${key}" has the expected type.`);
+      } else {
+        console.log(`Key "${key}" does not have the expected type.`);
+        return false; // Or you can store failed keys in an array or perform other error handling.
+      }
+    } else {
+      res.status(400).json({ error: `Invalid criteria - ${key}` });
+    }
+    return parsedQuery;
+  }
 }
 
 export async function validateRequest(
@@ -39,7 +55,7 @@ export async function validateRequest(
       case "GET":
         // TODO - add validation and parsing logic
         const criteria: object | null = parseCrieria(apiService!, req.query);
-        console.log('criteria - ', criteria)
+        console.log("criteria - ", criteria);
         break;
       case "POST":
         break;

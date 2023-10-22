@@ -1,3 +1,3 @@
-import * as postsCriteria from "./postsCriteria";
+import postsCriteria from "./postsCriteria";
 
 export { postsCriteria }
