@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import * as criterias from "../criterias";
+import { Criteria } from "../types/criteria";
 
 function extractUrlPath(requestUrl: string) {
   const match = requestUrl.match(/^\/(\w+)/);
@@ -10,22 +11,34 @@ function extractUrlPath(requestUrl: string) {
 }
 
 // Verify if the query params satisfy the pre-defined types for list criteria
-async function parseCrieria(apiService: string, query: object) {
+async function parseCrieria(apiService: string, query: { [key: string]: any }, res:any) {
   const parsedQuery: object = {};
 
   // get pre-defined types for criteria fields
   const criteriaFormatObjectName: string = `${apiService}Criteria`;
   console.log("query - ", query);
 
-  const criteria: object = (criterias as any)[criteriaFormatObjectName];
+  const criteria: Criteria = (criterias as any)[criteriaFormatObjectName];
   console.log("criteria - ", criteria);
 
   for (const key in query) {
     console.log("key - ", key);
     if (key in criteria) {
       const expectedType = criteria[key].type;
-      const value = data[key];
-      if (value instanceof expectedType) {
+      const value = query[key];
+      console.log("type - ", expectedType)
+      console.log("type.name - ", expectedType.name)
+      switch (expectedType.name) {
+        case "Number":
+          if (isNaN(value)) {
+            res.status(400).json({ error:`Criteria type is incorrect: ${expectedType.name} | value: ${value}`});
+          }
+          return parseInt(value, 10)
+      }
+      console.log('expectedType - ', expectedType)
+      
+      console.log('typeof value - ', typeof value)
+      if (typeof value === expectedType) {
         console.log(`Key "${key}" has the expected type.`);
       } else {
         console.log(`Key "${key}" does not have the expected type.`);
@@ -54,7 +67,7 @@ export async function validateRequest(
     switch (req.method) {
       case "GET":
         // TODO - add validation and parsing logic
-        const criteria: object | null = parseCrieria(apiService!, req.query);
+        const criteria: object | null = parseCrieria(apiService!, req.query, res);
         console.log("criteria - ", criteria);
         break;
       case "POST":

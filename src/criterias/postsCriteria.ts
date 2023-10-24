@@ -1,4 +1,6 @@
-const postsCriteria = {
+import { Criteria } from "../types/criteria";
+
+const postsCriteria: Criteria = {
     id: {
         type: Number,
         description: 'Id of the post'
