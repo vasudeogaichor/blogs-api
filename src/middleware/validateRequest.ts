@@ -11,7 +11,7 @@ function extractUrlPath(requestUrl: string) {
 }
 
 // Verify if the query params satisfy the pre-defined types for list criteria
-async function parseCrieria(apiService: string, query: { [key: string]: any }, res:any) {
+async function parseCrieria(apiService: string, query: { [key: string]: any }, res: any) {
   const parsedQuery: object = {};
 
   // get pre-defined types for criteria fields
@@ -25,18 +25,33 @@ async function parseCrieria(apiService: string, query: { [key: string]: any }, r
     console.log("key - ", key);
     if (key in criteria) {
       const expectedType = criteria[key].type;
-      const value = query[key];
+      let value = query[key];
       console.log("type - ", expectedType)
       console.log("type.name - ", expectedType.name)
       switch (expectedType.name) {
-        case "Number":
+        case 'Number':
           if (isNaN(value)) {
-            res.status(400).json({ error:`Criteria type is incorrect: ${expectedType.name} | value: ${value}`});
+            res.status(400).json({ error: `Criteria type is incorrect: ${expectedType.name} | value: ${value}` });
           }
-          return parseInt(value, 10)
+          return parseInt(value, 10);
+
+        case 'String':
+          if (value !== null && (typeof value !== 'string' || value.constructor !== String)) {
+            if (['number', 'boolean'].includes(typeof value) || value instanceof Date) {
+              const parsedValue = String(value);
+            } else {
+              res.status(400).json({ error: `Criteria type is incorrect: ${expectedType.name} | value: ${value}` });
+            }
+          }
+
+          if (value && typeof value === 'string') {
+            value = value.trim();
+          }
+
+          return value as string;
       }
       console.log('expectedType - ', expectedType)
-      
+
       console.log('typeof value - ', typeof value)
       if (typeof value === expectedType) {
         console.log(`Key "${key}" has the expected type.`);
