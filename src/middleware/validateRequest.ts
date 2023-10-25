@@ -11,58 +11,51 @@ function extractUrlPath(requestUrl: string) {
 }
 
 // Verify if the query params satisfy the pre-defined types for list criteria
-async function parseCrieria(apiService: string, query: { [key: string]: any }, res: any) {
-  const parsedQuery: object = {};
+function parseCrieria(apiService: string, query: { [key: string]: any }, res: any) {
+  const parsedQuery= new Map<string, any>();
 
   // get pre-defined types for criteria fields
   const criteriaFormatObjectName: string = `${apiService}Criteria`;
-  console.log("query - ", query);
 
   const criteria: Criteria = (criterias as any)[criteriaFormatObjectName];
-  console.log("criteria - ", criteria);
 
   for (const key in query) {
-    console.log("key - ", key);
     if (key in criteria) {
       const expectedType = criteria[key].type;
       let value = query[key];
-      console.log("type - ", expectedType)
-      console.log("type.name - ", expectedType.name)
       switch (expectedType.name) {
         case 'Number':
           if (isNaN(value)) {
             res.status(400).json({ error: `Criteria type is incorrect: ${expectedType.name} | value: ${value}` });
           }
-          return parseInt(value, 10);
+          parsedQuery.set(key, parseInt(value, 10));
+          break;
 
         case 'String':
+          let parsedValue;
           if (value !== null && (typeof value !== 'string' || value.constructor !== String)) {
             if (['number', 'boolean'].includes(typeof value) || value instanceof Date) {
-              const parsedValue = String(value);
+              value = String(value);
+              
             } else {
               res.status(400).json({ error: `Criteria type is incorrect: ${expectedType.name} | value: ${value}` });
             }
           }
 
-          if (value && typeof value === 'string') {
-            value = value.trim();
+          if (value && typeof value ==='string') {
+            parsedValue = value.trim();
           }
+          parsedQuery.set(key, parsedValue);
+          break;
 
-          return value as string;
-      }
-      console.log('expectedType - ', expectedType)
-
-      console.log('typeof value - ', typeof value)
-      if (typeof value === expectedType) {
-        console.log(`Key "${key}" has the expected type.`);
-      } else {
-        console.log(`Key "${key}" does not have the expected type.`);
-        return false; // Or you can store failed keys in an array or perform other error handling.
+        default:
+          res.status(400).json({ error: `Unsupported criteria type: ${expectedType.name}` });
+          break;
       }
     } else {
       res.status(400).json({ error: `Invalid criteria - ${key}` });
     }
-    return parsedQuery;
+        return parsedQuery;
   }
 }
 
@@ -75,16 +68,14 @@ export async function validateRequest(
   // Example: parsing JSON data from the request body
   try {
     // TODO - add validation and parsing logic
-    console.log("method - ", req.method);
-    console.log("req.url - ", req.url);
     const apiService: string | undefined = extractUrlPath(req.url);
-    console.log("apiService - ", apiService);
     switch (req.method) {
       case "GET":
         // TODO - add validation and parsing logic
-        const criteria: object | null = parseCrieria(apiService!, req.query, res);
-        console.log("criteria - ", criteria);
+        const criteria: Map<string, any> | any = parseCrieria(apiService!, req.query, res);
+        req.query = criteria;
         break;
+
       case "POST":
         break;
       case "PUT":

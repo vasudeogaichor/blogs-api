@@ -6,6 +6,8 @@ export default async function listPosts(
   res: Response,
   next: NextFunction
 ) {
+  const criteria = req.query;
+  
   const result: any = await db.posts.findAll();
 
   if (!result.length) {
