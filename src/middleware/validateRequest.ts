@@ -48,6 +48,12 @@ function parseCrieria(apiService: string, query: { [key: string]: any }, res: an
           parsedQuery.set(key, parsedValue);
           break;
 
+        case 'Boolean':
+          return value
+
+        case 'Date':
+          return value
+
         default:
           res.status(400).json({ error: `Unsupported criteria type: ${expectedType.name}` });
           break;
