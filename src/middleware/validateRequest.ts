@@ -12,7 +12,7 @@ function extractUrlPath(requestUrl: string) {
 
 // Verify if the query params satisfy the pre-defined types for list criteria
 function parseCrieria(apiService: string, query: { [key: string]: any }, res: any) {
-  const parsedQuery= new Map<string, any>();
+  const parsedQuery: { [key: string]: any } = {};
 
   // get pre-defined types for criteria fields
   const criteriaFormatObjectName: string = `${apiService}Criteria`;
@@ -28,7 +28,7 @@ function parseCrieria(apiService: string, query: { [key: string]: any }, res: an
           if (isNaN(value)) {
             res.status(400).json({ error: `Criteria type is incorrect: ${expectedType.name} | value: ${value}` });
           }
-          parsedQuery.set(key, parseInt(value, 10));
+          parsedQuery.key = parseInt(value, 10);
           break;
 
         case 'String':
@@ -45,7 +45,7 @@ function parseCrieria(apiService: string, query: { [key: string]: any }, res: an
           if (value && typeof value ==='string') {
             parsedValue = value.trim();
           }
-          parsedQuery.set(key, parsedValue);
+          parsedQuery.key = parsedValue;
           break;
 
         case 'Boolean':
@@ -78,7 +78,7 @@ export async function validateRequest(
     switch (req.method) {
       case "GET":
         // TODO - add validation and parsing logic
-        const criteria: Map<string, any> | any = parseCrieria(apiService!, req.query, res);
+        const criteria: { [key: string]: any } = parseCrieria(apiService!, req.query, res);
         req.query = criteria;
         break;
 
