@@ -21,14 +21,14 @@ function parseCrieria(apiService: string, query: { [key: string]: any }, res: an
 
   for (const key in query) {
     if (key in criteria) {
-      const expectedType = criteria[key].type;
+            const expectedType = criteria[key].type;
       let value = query[key];
       switch (expectedType.name) {
         case 'Number':
           if (isNaN(value)) {
             res.status(400).json({ error: `Criteria type is incorrect: ${expectedType.name} | value: ${value}` });
           }
-          parsedQuery.key = parseInt(value, 10);
+          parsedQuery[key] = parseInt(value, 10);
           break;
 
         case 'String':
@@ -45,7 +45,7 @@ function parseCrieria(apiService: string, query: { [key: string]: any }, res: an
           if (value && typeof value ==='string') {
             parsedValue = value.trim();
           }
-          parsedQuery.key = parsedValue;
+          parsedQuery[key] = parsedValue;
           break;
 
         case 'Boolean':
