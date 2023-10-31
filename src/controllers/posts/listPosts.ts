@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import db from "../../database/connection";
+import { Op } from 'sequelize';
 
 export default async function listPosts(
   req: Request,
@@ -8,13 +9,27 @@ export default async function listPosts(
 ) {
   const criteria = req.query;
   
-  console.log('criteria - ', criteria)
-  const where: { [key: string]: any } = {};
+  const where: any = {};
 
   if (criteria?.id) {
     where.id = criteria.id;
   }
-  console.log('where - ', where)
+
+  if (criteria?.query) {
+    where[Op.or] = [
+      {
+        title: {
+          [Op.iLike]: `%${criteria.query}%` // Case-insensitive search in title
+        },
+      },
+      {
+        content: {
+          [Op.iLike]: `%${criteria.query}%` // Case-insensitive search in content
+        },
+      },
+    ]
+  }
+
   const result: any = await db.posts.findAll({ where });
 
   if (!result.length) {
