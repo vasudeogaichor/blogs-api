@@ -1,6 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import * as criterias from "../criterias";
 import { Criteria } from "../types/criteria";
+import { validationResult, body, check } from 'express-validator';
+
+const bodyValidationRules = [
+  body('field1').notEmpty().isString(),
+  body('field2').isInt(),
+  // Add more validation rules as needed for your specific fields.
+];
 
 function extractUrlPath(requestUrl: string) {
   const match = requestUrl.match(/^\/(\w+)/);
@@ -21,7 +28,7 @@ function parseCrieria(apiService: string, query: { [key: string]: any }, res: an
 
   for (const key in query) {
     if (key in criteria) {
-            const expectedType = criteria[key].type;
+      const expectedType = criteria[key].type;
       let value = query[key];
       switch (expectedType.name) {
         case 'Number':
@@ -36,13 +43,13 @@ function parseCrieria(apiService: string, query: { [key: string]: any }, res: an
           if (value !== null && (typeof value !== 'string' || value.constructor !== String)) {
             if (['number', 'boolean'].includes(typeof value) || value instanceof Date) {
               value = String(value);
-              
+
             } else {
               res.status(400).json({ error: `Criteria type is incorrect: ${expectedType.name} | value: ${value}` });
             }
           }
 
-          if (value && typeof value ==='string') {
+          if (value && typeof value === 'string') {
             parsedValue = value.trim();
           }
           parsedQuery[key] = parsedValue;
@@ -61,7 +68,7 @@ function parseCrieria(apiService: string, query: { [key: string]: any }, res: an
     } else {
       res.status(400).json({ error: `Invalid criteria - ${key}` });
     }
-        return parsedQuery;
+    return parsedQuery;
   }
 }
 
@@ -70,19 +77,30 @@ export async function validateRequest(
   res: Response,
   next: NextFunction
 ) {
-  // Add your request data validation and parsing logic here
-  // Example: parsing JSON data from the request body
+
   try {
-    // TODO - add validation and parsing logic
+
     const apiService: string | undefined = extractUrlPath(req.url);
+
     switch (req.method) {
       case "GET":
-        // TODO - add validation and parsing logic
         const criteria: { [key: string]: any } = parseCrieria(apiService!, req.query, res);
         req.query = criteria;
         break;
 
       case "POST":
+        // Add body validation
+        await Promise.all(bodyValidationRules.map(validationRule => validationRule.run(req)));
+
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+          return res.status(400).json({ errors: errors.array() });
+        }
+        
+        // TODO: Add parsing logic for request body
+        // For example, you can access the validated fields using req.body
+        const field1 = req.body.field1;
+        const field2 = req.body.field2;
         break;
       case "PUT":
         break;
