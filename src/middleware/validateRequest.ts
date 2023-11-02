@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import * as criterias from "../criterias";
+import * as criterias from "../criteria";
 import { Criteria } from "../types/criteria";
 import { validationResult, body, check } from 'express-validator';
 
