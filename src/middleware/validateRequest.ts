@@ -1,13 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import * as criterias from "../criteria";
 import * as resources from "../resources";
-import { Criteria } from "../types/criteria";
-import { Resource } from "../types/resources";
-
-interface ExpectedType {
-  name: string;
-}
-
+import * as types from "../types"
 
 function extractUrlPath(requestUrl: string) {
   const match = requestUrl.match(/^\/(\w+)/);
@@ -17,7 +11,7 @@ function extractUrlPath(requestUrl: string) {
   }
 }
 
-function parseField(key: string, query: { [key: string]: any }, expectedType: ExpectedType, res: any) {
+function parseField(key: string, query: { [key: string]: any }, expectedType: types.ExpectedType, res: any) {
   let value = query[key];
 
   switch (expectedType.name) {
@@ -56,7 +50,7 @@ function parseResource(apiService: string, query: { [key: string]: any }, res: a
   const parsedResource: { [key: string]: any } = {};
 
   const resourceFormatObjectName: string = `${apiService}Resource`;
-  const resource: Resource = (resources as any)[resourceFormatObjectName];
+  const resource: types.Resource = (resources as any)[resourceFormatObjectName];
 
   for (const key in query) {
     if (key in resource) {
@@ -76,7 +70,7 @@ function parseCrieria(apiService: string, query: { [key: string]: any }, res: an
   const parsedQuery: { [key: string]: any } = {};
 
   const criteriaFormatObjectName: string = `${apiService}Criteria`;
-  const criteria: Criteria = (criterias as any)[criteriaFormatObjectName];
+  const criteria: types.Criteria = (criterias as any)[criteriaFormatObjectName];
 
   for (const key in query) {
     if (key in criteria) {
