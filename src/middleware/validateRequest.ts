@@ -11,13 +11,13 @@ function extractUrlPath(requestUrl: string) {
   }
 }
 
-function parseField(key: string, query: { [key: string]: any }, expectedType: types.ExpectedType, res: any) {
+function parseField(key: string, query: { [key: string]: any }, expectedType: types.ExpectedType, res: any, currentlyParsing: string) {
   let value = query[key];
 
   switch (expectedType.name) {
     case 'Number':
       if (isNaN(value)) {
-        res.status(400).json({ error: `Resource type is incorrect: ${expectedType.name} | value: ${value}` });
+        res.status(400).json({ error: `${currentlyParsing} type is incorrect: ${expectedType.name} | value: ${value}` });
       }
       return parseInt(value, 10);
 
@@ -27,7 +27,7 @@ function parseField(key: string, query: { [key: string]: any }, expectedType: ty
         if (['number', 'boolean'].includes(typeof value) || value instanceof Date) {
           value = String(value);
         } else {
-          res.status(400).json({ error: `Resource type is incorrect: ${expectedType.name} | value: ${value}` });
+          res.status(400).json({ error: `${currentlyParsing} type is incorrect: ${expectedType.name} | value: ${value}` });
         }
       }
 
@@ -41,7 +41,7 @@ function parseField(key: string, query: { [key: string]: any }, expectedType: ty
       return value;
 
     default:
-      res.status(400).json({ error: `Unsupported Resource type: ${expectedType.name}` });
+      res.status(400).json({ error: `Unsupported ${currentlyParsing} type: ${expectedType.name}` });
       return null;
   }
 }
@@ -55,7 +55,7 @@ function parseResource(apiService: string, query: { [key: string]: any }, res: a
   for (const key in query) {
     if (key in resource) {
       const expectedType = resource[key].type;
-      const parsedValue = parseField(key, query, expectedType, res);
+      const parsedValue = parseField(key, query, expectedType, res, 'Resource');
       if (parsedValue !== null) {
         parsedResource[key] = parsedValue;
       }
@@ -75,7 +75,7 @@ function parseCrieria(apiService: string, query: { [key: string]: any }, res: an
   for (const key in query) {
     if (key in criteria) {
       const expectedType = criteria[key].type;
-      const parsedValue = parseField(key, query, expectedType, res);
+      const parsedValue = parseField(key, query, expectedType, res, 'Criteria');
       if (parsedValue !== null) {
         parsedQuery[key] = parsedValue;
       }
