@@ -103,12 +103,15 @@ export async function validateRequest(
         break;
 
       case "POST":
-        const parsedResource: { [key: string]: any } = parseResource(apiService!, req.body, res);
-        req.body = parsedResource;
+        const parsedResourcePOST: { [key: string]: any } = parseResource(apiService!, req.body, res);
+        req.body = parsedResourcePOST;
         break;
 
       case "PUT":
+        const parsedResourcePUT: { [key: string]: any } = parseResource(apiService!, req.body, res);
+        req.body = parsedResourcePUT;
         break;
+
       case "DELETE":
         break;
     }
