@@ -35,7 +35,7 @@ export default async function listPosts(
   if (!result.length) {
     // throw new Error(`Error getting posts!`);
     return res.status(404).json({
-      error: `Error getting posts!`,
+      error: `No posts found!`,
     });
   }
 
