@@ -12,8 +12,6 @@ export default async function getPosts(
 	const result: any = await db.posts.findByPk(postId);
 
 		if (!result) {
-			// throw new Error(`Error getting post with id - ${postId}`);
-      // next(`Error getting post with id - ${postId}`);
       return res.status(404).json({
         error: `Post with id ${postId} not found.`
       })
