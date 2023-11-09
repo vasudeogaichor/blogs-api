@@ -68,16 +68,28 @@ function parseResource(apiService: string, query: { [key: string]: any }, res: a
 
 function parseCrieria(apiService: string, query: { [key: string]: any }, res: any) {
   const parsedQuery: { [key: string]: any } = {};
-
   const criteriaFormatObjectName: string = `${apiService}Criteria`;
   const criteria: types.Criteria = (criterias as any)[criteriaFormatObjectName];
 
   for (const key in query) {
     if (key in criteria) {
-      const expectedType = criteria[key].type;
-      const parsedValue = parseField(key, query, expectedType, res, 'Criteria');
-      if (parsedValue !== null) {
-        parsedQuery[key] = parsedValue;
+      const declaration = criteria[key];
+      let parsedValues = null;
+      
+      if (Array.isArray(declaration)) {
+        const expectedType = declaration[0].type;
+
+        parsedValues = query[key].split(",").map((ele: String) => {
+          const obj = { [key]: ele };
+          return parseField(key, obj, expectedType, res, "Criteria  ");
+        });
+      } else {
+        const expectedType = declaration.type;
+        parsedValues = parseField(key, query, expectedType, res, 'Criteria');
+      }
+      
+      if (parsedValues !== null) {
+        parsedQuery[key] = parsedValues;
       }
     } else {
       res.status(400).json({ error: `Invalid criteria - ${key}` });
