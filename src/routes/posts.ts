@@ -4,7 +4,7 @@ import {validateRequest} from "../middleware/validateRequest";
 const router = express.Router();
 
 router.get("/posts", validateRequest, postControllers.listPosts);
-router.get("/posts/:id", validateRequest, postControllers.getPosts);
+router.get("/posts/:id", validateRequest, postControllers.getPosts, validateRequest);
 router.put("/posts/:id", validateRequest, postControllers.updatePosts);
 router.delete("/posts/:id", validateRequest, postControllers.deletePosts);
 router.post("/posts", validateRequest, postControllers.createPosts);

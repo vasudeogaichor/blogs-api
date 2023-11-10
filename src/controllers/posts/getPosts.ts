@@ -6,18 +6,21 @@ export default async function getPosts(
   res: Response,
   next: NextFunction
 ) {
+  const postId: Number = parseInt(req.params.id);
 
-	const postId: Number = parseInt(req.params.id);
+  const result: any = await db.posts.findByPk(postId);
 
-	const result: any = await db.posts.findByPk(postId);
+  if (!result) {
+    return res.status(404).json({
+      error: `Post with id ${postId} not found.`,
+    });
+  }
 
-		if (!result) {
-      return res.status(404).json({
-        error: `Post with id ${postId} not found.`
-      })
-		}
-    
-  return res.status(200).json({
+  res.locals.responseBody = {
     message: result,
-  });
+  };
+
+  res.status(200).json(res.locals.responseBody);
+
+  // next();
 }
