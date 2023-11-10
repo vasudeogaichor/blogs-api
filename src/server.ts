@@ -31,7 +31,9 @@ router.use((req, res, next) => {
 });
 
 //synchronizing the database and forcing it to false so we dont lose data
-db.sequelize.sync({ force: true }).then(() => {
+// force: true => drops all tables and recreates them,
+// useful in development only, remove in production
+db.sequelize.sync(/*{ force: true }*/).then(() => {
   console.log("db has been re sync")
 })
 
