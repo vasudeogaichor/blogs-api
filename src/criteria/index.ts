@@ -1,3 +1,3 @@
-import postsCriteria from "./postsCriteria";
+import blogsCriteria from "./blogsCriteria";
 
-export { postsCriteria }
+export { blogsCriteria }

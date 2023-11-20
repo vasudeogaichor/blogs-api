@@ -1,3 +1,3 @@
-import postsResource from "./postsResource";
+import blogsResource from "./blogsResource";
 
-export { postsResource }
+export { blogsResource }

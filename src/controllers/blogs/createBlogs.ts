@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { Transaction } from "sequelize";
 import db from "../../database/connection";
 
-export default async function createPosts(
+export default async function createBlogs(
   req: Request,
   res: Response,
   next: NextFunction
@@ -14,7 +14,7 @@ export default async function createPosts(
 
   let result: any = null;
   try {
-    result = await db.posts.create(
+    result = await db.blogs.create(
       {
         title,
         content,
@@ -27,7 +27,7 @@ export default async function createPosts(
     await t.rollback();
 
     return res.status(400).json({
-      error: `Post creation failed with error- ${err}`
+      error: `Blog creation failed with error- ${err}`
     })
   }
 

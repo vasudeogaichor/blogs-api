@@ -1,10 +1,10 @@
 import { Criteria } from "../types/criteria";
 
-const postsCriteria: Criteria = {
+const blogsCriteria: Criteria = {
     id: [
         {
             type: Number,
-            description: "Id of the post",
+            description: "Id of the blog",
         },
     ],
     query: {
@@ -13,4 +13,4 @@ const postsCriteria: Criteria = {
     },
 };
 
-export default postsCriteria;
+export default blogsCriteria;

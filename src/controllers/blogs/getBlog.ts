@@ -1,18 +1,18 @@
 import { Request, Response, NextFunction } from "express";
 import db from "../../database/connection";
 
-export default async function getPosts(
+export default async function getBlogs(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const postId: Number = parseInt(req.params.id);
+  const blogId: Number = parseInt(req.params.id);
 
-  const result: any = await db.posts.findByPk(postId);
+  const result: any = await db.blogs.findByPk(blogId);
 
   if (!result) {
     return res.status(404).json({
-      error: `Post with id ${postId} not found.`,
+      error: `Blog with id ${blogId} not found.`,
     });
   }
 

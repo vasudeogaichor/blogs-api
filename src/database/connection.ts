@@ -33,7 +33,7 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 // Connecting to model
-db.posts = require("./models/posts")(sequelize, DataTypes);
+db.blogs = require("./models/blogs")(sequelize, DataTypes);
 
 // Exporting the module
 export = db;

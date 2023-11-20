@@ -1,1 +1,1 @@
-export * as postControllers from './posts';
+export * as blogControllers from './blogs';

@@ -1,24 +1,24 @@
 import { Request, Response, NextFunction } from "express";
 import db from "../../database/connection";
-// @TODO - change the type of postToUpdate to model Post
-// import { Post } from "../database/models/posts";
+// @TODO - change the type of blogToUpdate to model Blog
+// import { Blog } from "../database/models/blogs";
 
-export default async function updatePosts(
+export default async function updateBlogs(
   req: Request,
   res: Response,
   next: NextFunction
 ) {
-  const postId: Number = parseInt(req.params.id);
+  const blogId: Number = parseInt(req.params.id);
   try {
     const title: string | undefined = req.body.title;
 
     const content: string | undefined = req.body.content;
 
-    let postToUpdate: any = await db.posts.findByPk(postId);
+    let blogToUpdate: any = await db.blogs.findByPk(blogId);
 
-    if (!postToUpdate) {
+    if (!blogToUpdate) {
       return res.status(404).json({
-        error: `Post with id ${postId} not found.`,
+        error: `Blog with id ${blogId} not found.`,
       });
     }
 
@@ -32,14 +32,14 @@ export default async function updatePosts(
       updatedFields.content = content;
     }
 
-    await postToUpdate.update(updatedFields);
+    await blogToUpdate.update(updatedFields);
 
     return res.status(201).json({
-      message: postToUpdate,
+      message: blogToUpdate,
     });
   } catch (err) {
     return res.status(400).json({
-      error: `Failed to update post with id ${postId}`,
+      error: `Failed to update blog with id ${blogId}`,
     });
   }
 }

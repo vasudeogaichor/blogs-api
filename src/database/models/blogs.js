@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
-    return sequelize.define('posts', {
+    return sequelize.define('blogs', {
         title: DataTypes.STRING,
         content: DataTypes.TEXT
     }, {
