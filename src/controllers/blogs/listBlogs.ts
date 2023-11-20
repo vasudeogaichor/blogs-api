@@ -8,6 +8,8 @@ export default async function listBlogs(
   next: NextFunction
 ) {
   const criteria = req.query;
+  // TODO - remove and fix "as any" implementation
+  const offset: number = (criteria.page as any - 1) * (criteria.limit as any);
   
   const where: any = {};
 
@@ -30,9 +32,13 @@ export default async function listBlogs(
     ]
   }
 
-  const result: any = await db.blogs.findAll({ where });
+  const result: any = await db.blogs.findAndCountAll({ 
+    where,
+    limit: criteria.limit,
+    offset
+   });
 
-  if (!result.length) {
+   if (!result.rows.length) {
     // throw new Error(`Error getting blogs!`);
     return res.status(404).json({
       error: `No blogs found!`,
@@ -40,6 +46,7 @@ export default async function listBlogs(
   }
 
   return res.status(200).json({
-    message: result,
+    total: result.count,
+    data: result.rows,
   });
 }
