@@ -71,30 +71,51 @@ function parseCrieria(apiService: string, query: { [key: string]: any }, res: an
   const criteriaFormatObjectName: string = `${apiService}Criteria`;
   const criteria: types.Criteria = (criterias as any)[criteriaFormatObjectName];
 
-  for (const key in query) {
-    if (key in criteria) {
-      const declaration = criteria[key];
+  // TODO - optimize below loop
+    for (const criterion in criteria) {
+    if (criterion in query) {
+      const declaration = criteria[criterion];
       let parsedValues = null;
-      
+
       if (Array.isArray(declaration)) {
         const expectedType = declaration[0].type;
 
-        parsedValues = query[key].split(",").map((ele: String) => {
-          const obj = { [key]: ele };
-          return parseField(key, obj, expectedType, res, "Criteria  ");
+        parsedValues = query[criterion].split(",").map((ele: String) => {
+          const obj = { [criterion]: ele };
+          return parseField(criterion, obj, expectedType, res, "Criteria");
         });
       } else {
         const expectedType = declaration.type;
-        parsedValues = parseField(key, query, expectedType, res, 'Criteria');
+        parsedValues = parseField(criterion, query, expectedType, res, 'Criteria');
       }
-      
+
       if (parsedValues !== null) {
-        parsedQuery[key] = parsedValues;
+        parsedQuery[criterion] = parsedValues;
       }
-    } else {
-      res.status(400).json({ error: `Invalid criteria - ${key}` });
+    } else if (criteria[criterion].hasOwnProperty('default')) {
+      const declaration = criteria[criterion];
+      let parsedValues = null;
+
+      if (Array.isArray(declaration)) {
+        const expectedType = declaration[0].type;
+        const defaultValues = declaration[0].default
+        parsedValues = defaultValues.map((ele: String) => {
+          const obj = { [criterion]: ele };
+          return parseField(criterion, obj, expectedType, res, "Criteria");
+        });
+      } else {
+        const expectedType = declaration.type;
+        const defaultValues = declaration.default
+        const obj = { [criterion]: defaultValues }
+        parsedValues = parseField(criterion, obj, expectedType, res, 'Criteria');
+      }
+
+      if (parsedValues !== null) {
+        parsedQuery[criterion] = parsedValues;
+      }
     }
   }
+
   return parsedQuery;
 }
 

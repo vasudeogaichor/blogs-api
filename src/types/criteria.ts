@@ -1,3 +1,3 @@
 export type Criteria = {
-    [key: string]: { type: any; description: string } | { type: any; description: string }[];
+    [key: string]: { type: any; description: string, default?: any } | { type: any; description: string, default?:any }[];
   };
