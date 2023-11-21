@@ -14,35 +14,37 @@ function extractUrlPath(requestUrl: string) {
 function parseField(key: string, query: { [key: string]: any }, expectedType: types.ExpectedType, res: any, currentlyParsing: string) {
   let value = query[key];
 
-  switch (expectedType.name) {
-    case 'Number':
-      if (isNaN(value)) {
-        res.status(400).json({ error: `${currentlyParsing} type is incorrect: ${expectedType.name} | value: ${value}` });
-      }
-      return parseInt(value, 10);
-
-    case 'String':
-      let parsedValue: string | null = null;
-      if (value !== null && (typeof value !== 'string' || value.constructor !== String)) {
-        if (['number', 'boolean'].includes(typeof value) || value instanceof Date) {
-          value = String(value);
-        } else {
+  if (value !== undefined) {
+    switch (expectedType.name) {
+      case 'Number':
+        if (isNaN(value)) {
           res.status(400).json({ error: `${currentlyParsing} type is incorrect: ${expectedType.name} | value: ${value}` });
         }
-      }
+        return parseInt(value, 10);
 
-      if (value && typeof value === 'string') {
-        parsedValue = value.trim();
-      }
-      return parsedValue;
+      case 'String':
+        let parsedValue: string | null = null;
+        if (value !== null && (typeof value !== 'string' || value.constructor !== String)) {
+          if (['number', 'boolean'].includes(typeof value) || value instanceof Date) {
+            value = String(value);
+          } else {
+            res.status(400).json({ error: `${currentlyParsing} type is incorrect: ${expectedType.name} | value: ${value}` });
+          }
+        }
 
-    case 'Boolean':
-    case 'Date':
-      return value;
+        if (value && typeof value === 'string') {
+          parsedValue = value.trim();
+        }
+        return parsedValue;
 
-    default:
-      res.status(400).json({ error: `Unsupported ${currentlyParsing} type: ${expectedType.name}` });
-      return null;
+      case 'Boolean':
+      case 'Date':
+        return value;
+
+      default:
+        res.status(400).json({ error: `Unsupported ${currentlyParsing} type: ${expectedType.name}` });
+        return null;
+    }
   }
 }
 
@@ -71,48 +73,35 @@ function parseCrieria(apiService: string, query: { [key: string]: any }, res: an
   const criteriaFormatObjectName: string = `${apiService}Criteria`;
   const criteria: types.Criteria = (criterias as any)[criteriaFormatObjectName];
 
-  // TODO - optimize below loop
-    for (const criterion in criteria) {
-    if (criterion in query) {
-      const declaration = criteria[criterion];
-      let parsedValues = null;
+  for (const criterion in criteria) {
+    const declaration = criteria[criterion];
+    let parsedValues: any[] | null = null;
 
-      if (Array.isArray(declaration)) {
-        const expectedType = declaration[0].type;
+    if (Array.isArray(declaration)) {
+      const expectedType = declaration[0].type;
 
-        parsedValues = query[criterion].split(",").map((ele: String) => {
-          const obj = { [criterion]: ele };
-          return parseField(criterion, obj, expectedType, res, "Criteria");
-        });
-      } else {
-        const expectedType = declaration.type;
-        parsedValues = parseField(criterion, query, expectedType, res, 'Criteria');
-      }
+      parsedValues = query[criterion]?.split(",").map((ele: String) => {
+        const obj = { [criterion]: ele };
+        return parseField(criterion, obj, expectedType, res, "Criteria");
+      });
 
-      if (parsedValues !== null) {
-        parsedQuery[criterion] = parsedValues;
-      }
-    } else if (criteria[criterion].hasOwnProperty('default')) {
-      const declaration = criteria[criterion];
-      let parsedValues = null;
-
-      if (Array.isArray(declaration)) {
-        const expectedType = declaration[0].type;
+      if (!parsedValues?.length && declaration[0].hasOwnProperty('default')) {
         const defaultValues = declaration[0].default
-        parsedValues = defaultValues.map((ele: String) => {
-          const obj = { [criterion]: ele };
-          return parseField(criterion, obj, expectedType, res, "Criteria");
-        });
-      } else {
-        const expectedType = declaration.type;
-        const defaultValues = declaration.default
-        const obj = { [criterion]: defaultValues }
-        parsedValues = parseField(criterion, obj, expectedType, res, 'Criteria');
+        parsedValues = defaultValues.map((ele: String) => parseField(criterion, { [criterion]: ele }, expectedType, res, "Criteria"));
       }
 
-      if (parsedValues !== null) {
-        parsedQuery[criterion] = parsedValues;
+    } else {
+      const expectedType = declaration.type;
+      parsedValues = parseField(criterion, query, expectedType, res, 'Criteria');
+
+      if (!parsedValues && declaration.hasOwnProperty('default')) {
+        const defaultValues = declaration.default
+        parsedValues = parseField(criterion, { [criterion]: defaultValues }, expectedType, res, 'Criteria');
       }
+
+    }
+    if (parsedValues !== null) {
+      parsedQuery[criterion] = parsedValues;
     }
   }
 
