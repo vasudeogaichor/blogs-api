@@ -21,6 +21,10 @@ const blogsResource: Resource = {
         type: String,
         description: 'Email of the user'
     },
+    password: {
+        type: String,
+        description: 'Password of the user'
+    },
     createdAt: {
         type: Date,
         description: 'Time at which the user was created'
