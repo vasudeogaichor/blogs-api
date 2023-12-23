@@ -1,7 +1,7 @@
 import http from "http";
-import express, { Express } from "express";
+import express, { Express, Request, Response, NextFunction } from "express";
 import morgan from "morgan";
-import routes from "./routes/blogs";
+import routes from "./routes";
 import db from "./database/connection";
 
 const router: Express = express();
@@ -34,18 +34,25 @@ router.use((req, res, next) => {
 // force: true => drops all tables and recreates them,
 // useful in development only, remove in production
 db.sequelize.sync(/*{ force: true }*/).then(() => {
-  console.log("db has been re sync")
-})
+  console.log("db has been re sync");
+});
 
 /** Routes */
-router.use("/", routes);
+router.use("/", routes.blogsRouter);
+router.use("/", routes.usersRouter)
 
 /** Error handling */
-router.use((req, res, next) => {
-  const error = new Error("not found");
-  return res.status(404).json({
-    message: error.message,
-  });
+// router.use((req, res, next) => {
+//   const error = new Error("not found");
+//   return res.status(404).json({
+//     message: error.message,
+//   });
+// });
+
+router.use((err: Error, req: Request, res: Response, next: NextFunction) => {
+  console.error(err.stack);
+  const stackTrace = err.stack?.split("\n") || [];
+  res.status(500).json({ Error: stackTrace });
 });
 
 /** Server */

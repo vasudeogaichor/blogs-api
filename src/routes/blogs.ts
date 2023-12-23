@@ -9,4 +9,5 @@ router.put("/blogs/:id", validateRequest, blogControllers.updateBlogs);
 router.delete("/blogs/:id", validateRequest, blogControllers.deleteBlogs);
 router.post("/blogs", validateRequest, blogControllers.createBlogs);
 
-export = router;
+const blogsRouter: express.Router = router
+export default blogsRouter;

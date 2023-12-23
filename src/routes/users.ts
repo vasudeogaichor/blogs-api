@@ -8,4 +8,6 @@ router.get("/users/:id", validateRequest, userControllers.getUsers, validateRequ
 router.put("/users/:id", validateRequest, userControllers.updateUsers);
 router.delete("/users/:id", validateRequest, userControllers.deleteUsers);
 router.post("/users", validateRequest, userControllers.createUsers);
-export = router;
+
+const usersRouter: express.Router = router
+export default usersRouter;

@@ -117,7 +117,7 @@ export async function validateRequest(
   try {
 
     const apiService: string | undefined = extractUrlPath(req.url);
-
+    console.log('apiService - ',apiService)
     switch (req.method) {
       case "GET":
         const criteria: { [key: string]: any } = parseCrieria(apiService!, req.query, res);
