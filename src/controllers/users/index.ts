@@ -1,4 +1,4 @@
-import createUsers from "./createUsers";
+import {createUsers} from "./createUsers";
 import getUsers from "./getUsers";
 import listUsers from "./listUsers";
 import deleteUsers from "./deleteUsers";

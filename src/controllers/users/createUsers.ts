@@ -6,7 +6,7 @@ import { isStrongPassword, isEmailValid } from "../../utils/users";
 
 const saltRounds = 10;
 
-export default async function createUsers(
+export async function createUsers(
   req: Request,
   res: Response,
   next: NextFunction
@@ -15,22 +15,7 @@ export default async function createUsers(
 
   try {
     const { username, firstName, lastName, password, email } = req.body;
-    const strongPassword: boolean = isStrongPassword(password);
-
-    if (!strongPassword) {
-      res.status(400).json({
-        Error:
-          "Password should contain at least one uppercase character," +
-          "one lowercase character, one digit, one special character and must have at least 8 characters.",
-      });
-    }
-
-    const validEmail: boolean = isEmailValid(email);
-    if (!validEmail) {
-      res.status(400).json({
-        Error: "Provided email is invalid",
-      });
-    }
+    validateUserData(password, email, res);
 
     let hashedPassword: string = await bcrypt.hash(password, saltRounds);
     const newUser: any = await db.users.create(
@@ -41,13 +26,13 @@ export default async function createUsers(
         hashed_password: hashedPassword,
         email: email,
       },
-      transaction,
+      transaction
     );
 
     const result: any = {
       ...newUser.get(),
-      hashed_password: undefined
-    }
+      hashed_password: undefined,
+    };
     await transaction.commit();
     return res.status(201).json({
       message: result,
@@ -55,5 +40,24 @@ export default async function createUsers(
   } catch (err) {
     console.log("Error - ", err);
     res.status(500).json({ error: `${err}` });
+  }
+}
+
+export function validateUserData(password: string, email: string, res: Response) {
+  const strongPassword: boolean = isStrongPassword(password);
+
+  if (!strongPassword) {
+    res.status(400).json({
+      Error:
+        "Password should contain at least one uppercase character," +
+        "one lowercase character, one digit, one special character and must have at least 8 characters.",
+    });
+  }
+
+  const validEmail: boolean = isEmailValid(email);
+  if (!validEmail) {
+    res.status(400).json({
+      Error: "Provided email is invalid",
+    });
   }
 }
