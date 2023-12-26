@@ -1,6 +1,7 @@
 import * as emailValidator from 'email-validator';
 
 function isStrongPassword(password: string) {
+  if (!password) false;
   // Check if the password meets the minimum length requirement
   if (password.length < 8) {
     return false;
