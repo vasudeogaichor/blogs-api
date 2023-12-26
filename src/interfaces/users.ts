@@ -5,4 +5,6 @@ export default interface User {
   first_name?: string;
   last_name?: string;
   hashed_password?: string;
+  created_at?: string;
+  updated_at?: string;
 }
