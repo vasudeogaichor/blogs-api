@@ -43,21 +43,31 @@ export async function createUsers(
   }
 }
 
-export function validateUserData(password: string, email: string, res: Response) {
-  const strongPassword: boolean = isStrongPassword(password);
+export function validateUserData(
+  password: string,
+  email: string,
+  res: Response
+) {
+  if (!password && !email) return;
 
-  if (!strongPassword) {
-    res.status(400).json({
-      Error:
-        "Password should contain at least one uppercase character," +
-        "one lowercase character, one digit, one special character and must have at least 8 characters.",
-    });
+  if (password) {
+    const strongPassword: boolean = isStrongPassword(password);
+
+    if (!strongPassword) {
+      res.status(400).json({
+        Error:
+          "Password should contain at least one uppercase character," +
+          "one lowercase character, one digit, one special character and must have at least 8 characters.",
+      });
+    }
   }
 
-  const validEmail: boolean = isEmailValid(email);
-  if (!validEmail) {
-    res.status(400).json({
-      Error: "Provided email is invalid",
-    });
+  if (email) {
+    const validEmail: boolean = isEmailValid(email);
+    if (!validEmail) {
+      res.status(400).json({
+        Error: "Provided email is invalid",
+      });
+    }
   }
 }
