@@ -1,3 +1,4 @@
 import blogsCriteria from "./blogsCriteria";
+import usersCriteria from "./usersCriteria";
 
-export { blogsCriteria }
+export { blogsCriteria, usersCriteria }
