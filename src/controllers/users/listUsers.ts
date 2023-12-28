@@ -54,7 +54,8 @@ export default async function listUsers(
     }
 
     return res.status(200).json({
-      total: result.count,
+      actualTotal: result.count,
+      total: result.rows.length,
       data: result.rows,
     });
   } catch (err) {
